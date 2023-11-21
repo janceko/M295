@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #222;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        form {
+            background-color: #333;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            width: 320px;
+            position: relative;
+            transform-origin: center;
+            transition: transform 0.3s ease-in-out, scale 0.6s ease-in-out;
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            100% {
+                transform: scale(1.02);
+            }
+        }
+
+        form:hover {
+            transform: scale(1.03) rotate(3deg);
+        }
+
+        h1 {
+            text-align: center;
+            color: #eee;
+            margin-bottom: 30px;
+            font-weight: 400;
+            font-size: 28px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="submit"] {
+            width: calc(100% - 20px);
+            padding: 15px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            background-color: #444;
+            transition: all 0.3s ease;
+            color: #eee;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .bg-shapes {
+            position: absolute;
+            top: -150px;
+            left: -150px;
+            width: 600px;
+            height: 600px;
+            background-image: url('https://m.economictimes.com/thumb/height-450,width-600,imgsize-122134,msid-102489123/cyber-security-istock.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            filter: blur(40px);
+            opacity: 0.5;
+            z-index: -1;
+            animation: float 10s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0);
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <form method="POST" action="/login">
+        <h1>Login</h1>
+        <input type="text" name="username" placeholder="Username"><br>
+        <input type="password" name="password" placeholder="Password"><br>
+        <input type="submit" value="Login">
+        <div class="bg-shapes"></div>
+    </form>
+</body>
+</html>
+
+
+

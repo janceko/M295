@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>To-Do List</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e1e1e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .todo-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #333;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .todo-header {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+            color: #ddd;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Anpassungen für die Buttons */
+        .todo-item button {
+            margin: 5px; /* Abstand zwischen den Buttons */
+        }
+
+        /* Hintergrundanimation */
+        .background-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px),
+                              radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            background-position: 0 0, 25px 25px;
+            animation: animateBackground 10s linear infinite;
+        }
+
+        @keyframes animateBackground {
+            from {
+                background-position: 0 0, 25px 25px;
+            }
+            to {
+                background-position: 50px 0, 0 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation"></div>
+    <div class="todo-container">
+        <div class="todo-header">Get Things Done</div>
+        <form id="taskForm">
+            <div class="input-group mb-3">
+                <input type="text" id="taskInput" class="form-control" placeholder="Enter a task">
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-primary">Add Task</button>
+                </div>
+            </div>
+        </form>
+        <ul id="taskList" class="todo-list"></ul>
+    </div>
+
+    <script>
+        const taskList = document.getElementById('taskList');
+        const taskForm = document.getElementById('taskForm');
+        const taskInput = document.getElementById('taskInput');
+
+        async function fetchTasks() {
+            const response = await fetch('/tasks');
+            const tasks = await response.json();
+
+            taskList.innerHTML = '';
+            tasks.forEach(task => {
+                const taskElement = document.createElement('li');
+                taskElement.textContent = task.content;
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.addEventListener('click', () => deleteTask(task.id));
+
+                const editButton = document.createElement('button');
+                editButton.textContent = 'Edit';
+                editButton.addEventListener('click', () => editTask(task.id, task.content));
+
+                const priorityButton = document.createElement('button');
+                priorityButton.textContent = 'Set Priority';
+                priorityButton.addEventListener('click', () => setPriority(task.id));
+
+                taskElement.appendChild(deleteButton);
+                taskElement.appendChild(editButton);
+                taskElement.appendChild(priorityButton);
+                taskList.appendChild(taskElement);
+            });
+        }
+
+        async function addTask(event) {
+            event.preventDefault();
+
+            const content = taskInput.value;
+            if (!content) return;
+
+            await fetch('/tasks', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ content })
+            });
+
+            taskInput.value = '';
+            fetchTasks();
+        }
+
+        async function deleteTask(taskId) {
+            await fetch(`/tasks/${taskId}`, {
+                method: 'DELETE'
+            });
+
+            fetchTasks();
+        }
+
+        async function editTask(taskId, currentContent) {
+            const newContent = prompt('Edit Task', currentContent);
+            if (newContent === null || newContent.trim() === '') return;
+
+            await fetch(`/tasks/${taskId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ content: newContent })
+            });
+
+            fetchTasks();
+        }
+
+        async function setPriority(taskId) {
+            const priority = prompt('Set Priority (0 for low, 1 for medium, 2 for high)');
+            if (priority === null || isNaN(priority)) return;
+
+            await fetch(`/tasks/${taskId}/priority`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ priority: parseInt(priority) })
+            });
+
+            fetchTasks();
+        }
+
+        taskForm.addEventListener('submit', addTask);
+
+        fetchTasks();
+    </script>
+</body>
+</html>
+
